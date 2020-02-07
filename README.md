@@ -25,3 +25,7 @@
 #### Puis on enregistre le résultat  en cliquand sur "save reponse",
 #### il faut mettre le fichier dans le même réêrtoire que le programme
 ####  principal Main.py
+#### Ensuite on code en python pour récupérer les data dans une table de données
+#### appelé Table_categories, puis on les affiche
+### 4-3 Comment récupérer les produits de chaque catégories
+###

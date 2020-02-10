@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-# For French language
-import json
+import json, pprint
 import sys
 from sqlalchemy import create_engine, Column, Integer, Text, MetaData, Table,\
     select
@@ -33,7 +33,7 @@ def display_menu(head, options):
     print(head)
     while True:
         for idx, option in enumerate(options):
-            print("{} - {}".format(idx+1, option))
+            print("{} - {}".format(idx, option))
         choice = input("Quel est votre choix")
         try:
             option_nb = int(choice)
@@ -41,7 +41,7 @@ def display_menu(head, options):
             print("Non, mauvais choix, vous vous êtes trompé")
             continue  # retourne au debut de la boucle
 
-        if 0 < option_nb <= len(options):
+        if 0 <= option_nb <= len(options):
             return option_nb
         print("Non, mauvais choix, vous vous êtes trompé")
 
@@ -67,10 +67,47 @@ Table_Categories.create(bind=engine)
 if __name__ == '__main__':
     id = 0
     choice = display_menu("Bonjour, Bienvenue sur OFF_Substitut:", [
+        "Première utilisation, enregistrement du catalogue des catégories et"
+        " produits",
         "Quel aliment souhaitez-vous remplacer ?",
         "Retrouver mes aliments substitués",
         "Quitter menu"
     ])
+    if choice == 0:
+        results_categories=[]
+        results_products = []
+        r=requests.get('https://fr.openfoodfacts.org/categories.json')
+        packages_json = r.json()
+        #packages_str = json.dumps(packages_json, indent = 4)
+        for i in range (4,9):
+            data = {
+                "id" : i,
+                "name_catégory" : packages_json['tags'][i]['name']
+            }
+            results_categories.append(data)
+        pprint.pprint(results_categories)
+        choice = input ("Choisir une catégories en indiqueant son id")
+        #for package in packages_json:
+        print("choice =", int(choice))
+        package_name = packages_json['tags'][int(choice)]['name']
+        package_url = f'https://fr.openfoodfacts.org/category/{package_name}/1.json'
+        r = requests.get(package_url)
+        package_json = r.json()
+        for i in range (1,10):
+            data = {
+                "id" : i,
+                "name_product" : package_json['products'][i]['product_name_fr'],
+                "url": package_json['products'][i]['url']
+            }
+            results_products.append(data)
+        pprint.pprint(results_products)
+        #
+        #
+        #results.append(data)
+        #data_str = json[data[:5]]
+
+
+
     if choice == 1:
         # test print("option 1")
         for key_attribut in json.load(open("Categories_Aliment_France_OFF.json"

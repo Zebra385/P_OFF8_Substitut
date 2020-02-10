@@ -18,14 +18,6 @@
 ### 4-1 fichier principale en python, main.py
 #### Automatisation à l'aide d'une fontion (displa_menu(option)) pour l'affichage
 #### d'un menu, option étant l'intitulé du numero(index) dans le menu 
-### 4-2 Comment récupérer les catégories dans openfoodfacts
-#### On utilise postman pour récuperer sous forme d'un fichier json nommé 
-#### Categories_Aliment_France_OFF.json les catégories. La requete GEST est :
-#### https://fr.openfoodfacts.org/categories.json
-#### Puis on enregistre le résultat  en cliquand sur "save reponse",
-#### il faut mettre le fichier dans le même réêrtoire que le programme
-####  principal Main.py
-#### Ensuite on code en python pour récupérer les data dans une table de données
-#### appelé Table_categories, puis on les affiche
-### 4-3 Comment récupérer les produits de chaque catégories
-###
+### 4-2 Comment récupérer les catégories  et produits dans openfoodfacts
+#### Récupération catalogue catégories et produits grâce à la librairie Request.
+#### Choix 0 pour télécharger dans un tableau les renseignements voulus.

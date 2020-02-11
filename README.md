@@ -20,4 +20,4 @@
 #### d'un menu, option étant l'intitulé du numero(index) dans le menu 
 ### 4-2 Comment récupérer les catégories  et produits dans openfoodfacts
 #### Récupération catalogue catégories et produits grâce à la librairie Request.
-#### Choix 0 pour télécharger dans un tableau les renseignements voulus.
+#### Choix 0 pour télécharger dans des bases de données Catégories et produits.

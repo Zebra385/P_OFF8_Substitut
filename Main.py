@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-# For French language
 import json, pprint
 import sys
-from sqlalchemy import create_engine, Column, Integer, Text, MetaData, Table,\
-    select
-import requests
+import requests, mysql.connector
 
 
 """We create class Catégory to translate the data from a file jason in a table
@@ -46,24 +44,6 @@ def display_menu(head, options):
         print("Non, mauvais choix, vous vous êtes trompé")
 
 
-""" We use qslalchely to create a table to downlaod  the substitut of food"""
-
-
-# We must connect to base de données
-engine = create_engine('sqlite://')
-conn = engine . connect()
-
-# We def and create our table
-metadata = MetaData()
-Table_Categories = Table(
-    'Table_Category', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=1),
-    Column('name_category', Text),
-    Column('url', Text)
-)
-
-Table_Categories.create(bind=engine)
-
 if __name__ == '__main__':
     id = 0
     choice = display_menu("Bonjour, Bienvenue sur OFF_Substitut:", [
@@ -74,37 +54,52 @@ if __name__ == '__main__':
         "Quitter menu"
     ])
     if choice == 0:
-        results_categories=[]
-        results_products = []
+        """ We use mysql.connector to create a function to create a table"""
+
+        # We must connect to server
+        Myconnection = mysql.connector.connect(
+            host="localhost",  # l'hote sera local
+            user=" root ",
+            database="My_table"  # name of base de données
+        )
+        print(Myconnection)
+        # Then we can create the table MytableCategories
+        mycursor = Myconnection.cursor()
+        # create a table MytableCategories in base de données My_Table
+        mycursor.execute(
+            "CREATE TABLE MyTableCategories (id INT AUTO_INCREMENT PRIMARY KEY, Category VARCHAR(50))")
+        # create a table MytableProducts in base de données My_Table
+        mycursor.execute(
+            "CREATE TABLE MyTableProducts (id INT AUTO_INCREMENT PRIMARY KEY, Category  VARCHAR(50), NameProduct VARCHAR(50), url VARCHAR(200))")
+
+        # We request the api OFF to save in Table the categories(only the 4 first
         r=requests.get('https://fr.openfoodfacts.org/categories.json')
-        packages_json = r.json()
-        #packages_str = json.dumps(packages_json, indent = 4)
+        packages_json_categories = r.json()
+        # we take in table  MyTableCatégories the categories
         for i in range (4,9):
-            data = {
-                "id" : i,
-                "name_catégory" : packages_json['tags'][i]['name']
+            data_categories = {
+                "Category" : packages_json_categories['tags'][i]['name']
             }
-            results_categories.append(data)
-        pprint.pprint(results_categories)
-        choice = input ("Choisir une catégories en indiqueant son id")
-        #for package in packages_json:
-        print("choice =", int(choice))
-        package_name = packages_json['tags'][int(choice)]['name']
-        package_url = f'https://fr.openfoodfacts.org/category/{package_name}/1.json'
-        r = requests.get(package_url)
-        package_json = r.json()
-        for i in range (1,10):
-            data = {
-                "id" : i,
-                "name_product" : package_json['products'][i]['product_name_fr'],
-                "url": package_json['products'][i]['url']
-            }
-            results_products.append(data)
-        pprint.pprint(results_products)
-        #
-        #
-        #results.append(data)
-        #data_str = json[data[:5]]
+            mycursor.execute(
+                """INSERT INTO MytableCategories (Category) VALUES(%(Category)s)""",
+                data_categories)
+            Myconnection.commit()
+            package_name = packages_json_categories['tags'][i]['name']
+            package_url = f'https://fr.openfoodfacts.org/category/{package_name}/1.json'
+            r = requests.get(package_url)
+            package_json_product = r.json()
+            for j in range(1, 10):
+                data_products = {
+                    "Category": packages_json_categories['tags'][i]['name'],
+                    "NameProduct": package_json_product['products'][j]['product_name'],
+                    "url": package_json_product['products'][j]['url']
+                }
+                mycursor.execute(
+                    """INSERT INTO MytableProducts (Category, NameProduct, url) VALUES(%(Category)s,%(NameProduct)s,%(url)s)""",
+                    data_products)
+                Myconnection.commit()
+
+        print("Les tables sont enregistrées dans la base de données My_Table")
 
 
 

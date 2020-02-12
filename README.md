@@ -21,3 +21,6 @@
 ### 4-2 Comment récupérer les catégories  et produits dans openfoodfacts
 #### Récupération catalogue catégories et produits grâce à la librairie Request.
 #### Choix 0 pour télécharger dans des bases de données Catégories et produits.
+### 4-3 Affichage contenue table pour choix categorie
+#### choix 1 pour affichage contenu table categorie puis choix categorie, puis 
+#### affichage produits de la catégorie choisie, puis choix du produit

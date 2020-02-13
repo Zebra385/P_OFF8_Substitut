@@ -21,10 +21,11 @@ class Category:
     def __init__(self):
         # create a table MytableCategories in base de données My_Table
         mycursor.execute(
-            "CREATE TABLE MyTableCategories "
+            "CREATE TABLE IF NOT EXISTS MyTableCategories "
             "(id INT AUTO_INCREMENT PRIMARY KEY,"
             " name_category VARCHAR(50))")
-        # create a table MytableProducts in base de données My_Table
+    #  Function to fill data in this table
+    def fill(self):
         # We request the api OFF to save in Table the categories the 4 first
         r = requests.get('https://fr.openfoodfacts.org/categories.json')
         packages_json_categories = r.json()
@@ -47,9 +48,12 @@ class Product:
     def __init__(self):
         # Then we can create the table Mytableproduct
         mycursor.execute(
-            "CREATE TABLE MyTableProducts (id INT AUTO_INCREMENT PRIMARY KEY,"
-            " name_category  VARCHAR(50), NameProduct VARCHAR(50),"
+            "CREATE TABLE IF NOT EXISTS MyTableProducts (id INT AUTO_INCREMENT PRIMARY KEY,"
+            " name_category  VARCHAR(50), NameProduct VARCHAR(100),"
             " url VARCHAR(200))")
+
+    #  Function to fill data in this table
+    def fill(self):
         mycursor.execute("SELECT * FROM MytableCategories")
         myresult = mycursor.fetchall()
         for x in myresult:
@@ -72,6 +76,11 @@ class Product:
                     VALUES(%(name_category)s,%(NameProduct)s,%(url)s)""",
                     data_products)
                 Myconnection.commit()
+    #  Function to fin a sustit to the product
+    def find_substitut(self,category,product):
+        #  https://fr.openfoodfacts.org/cgi/search.pl?action=process&tagtype_0=categories&tag_contains_0=contains&tag_0=biscuit
+        pass
+
 
 
 """We create class Substitut to translate the data from a file jason in a table
@@ -82,11 +91,14 @@ class Substitut:
     def __init__(self):
         # create a table MytableSubstituts in base de données My_Table
         mycursor.execute(
-            "CREATE TABLE MyTableSubstituts "
+            "CREATE TABLE IF NOT EXISTS MyTableSubstituts "
             "(id_product INT AUTO_INCREMENT PRIMARY KEY,"
             " id_category INT, name_product VARCHAR(100),"
             " name_substitut VARCHAR(100), descriptif VARCHAR(100),"
             " store VARCHAR(100), url_substitut VARCHAR(200))")
+    #  Function to fill data in this table
+    def fill(selfs):
+        pass
 
 
 """ We def a function to make a menu automaticly"""
@@ -120,12 +132,17 @@ if __name__ == '__main__':
     if choice == 0:
         """ We use mysql.connector to create a function to create a table"""
         category = Category()
+        category.fill()
         product = Product()
+        product.fill()
         substitut = Substitut()
 
         print("Les tables sont enregistrées dans la base de données My_Table")
 
     if choice == 1:
+        category = Category()
+        product = Product()
+        substitut = Substitut()
         print('Bonjour, Bienvenue dans le catalogue des catégories:')
         mycursor.execute("SELECT * FROM MyTableCategories")
         myresult = mycursor.fetchall()

@@ -8,6 +8,7 @@ Myconnection = mysql.connector.connect(
             host="localhost",  # l'hote sera local
             user=" root ",
             database="My_table"  # name of base de données
+
         )
 print(Myconnection)
 mycursor = Myconnection.cursor()
@@ -20,10 +21,14 @@ name MyTableCategories"""
 class Category:
     def __init__(self):
         # create a table MytableCategories in base de données My_Table
-        mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS MyTableCategories "
-            "(id INT AUTO_INCREMENT PRIMARY KEY,"
-            " name_category VARCHAR(50))")
+        mycursor.execute("""
+        CREATE TABLE IF NOT EXISTS MyTableCategories(
+        id INT AUTO_INCREMENT,
+        name_category VARCHAR(50),
+        PRIMARY KEY (id)
+        );
+        """)
+        mycursor.execute("""ALTER TABLE MyTableCategories ENGINE = InnoDB""")
     #  Function to fill data in this table
     def fill(self):
         # We request the api OFF to save in Table the categories the 4 first
@@ -46,12 +51,20 @@ name MyTableProducts"""
 
 class Product:
     def __init__(self):
-        # Then we can create the table Mytableproduct
-        mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS MyTableProducts (id INT AUTO_INCREMENT PRIMARY KEY,"
-            " name_category  VARCHAR(50), NameProduct VARCHAR(100),"
-            " url VARCHAR(200))")
 
+        # Then we can create the table Mytableproducts
+        mycursor.execute("""
+        CREATE TABLE IF NOT EXISTS MyTableProducts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        NameProduct VARCHAR(100),
+        url VARCHAR(200),
+        nutriscore_grade VARCHAR(1),
+        store VARCHAR(50),
+        category_id INT
+        );
+        """)
+        mycursor.execute("""ALTER TABLE MyTableProducts ENGINE = InnoDB""")
+        mycursor.execute("""ALTER TABLE MyTableProducts ADD CONSTRAINT fk_name_category FOREIGN KEY (category_id) REFERENCES my_table.MyTableCategories(id)""")
     #  Function to fill data in this table
     def fill(self):
         mycursor.execute("SELECT * FROM MytableCategories")
@@ -60,25 +73,29 @@ class Product:
             # print(x[1])
             package_name = x[1]
             package_url = \
-                f'https://fr.openfoodfacts.org/category/{package_name}/1.json'
+                f'https://fr.openfoodfacts.org/category/{package_name}/2.json'
             r = requests.get(package_url)
             package_json_product = r.json()
-            for j in range(1, 10):
-                data_products = {
-                    "name_category": package_name,
-                    "NameProduct":
-                        package_json_product['products'][j]['product_name'],
-                    "url": package_json_product['products'][j]['url']
-                }
-                mycursor.execute(
-                    """INSERT INTO MytableProducts (name_category,
-                    NameProduct, url)
-                    VALUES(%(name_category)s,%(NameProduct)s,%(url)s)""",
-                    data_products)
-                Myconnection.commit()
+            for j in range(2, 11):
+                try :
+                    #  package_json_product['products'][j] = package_json_product['products'][j].get('nutriscore_grade', 'f') #  si le nustiscore n'existe pas
+                    #  package_json_product['products'][j] = package_json_product['products'][j].get('stores', '?')   # si le storen'existe pas
+                    data_products = {
+                        "NameProduct": package_json_product['products'][j]['product_name'],
+                        "nutriscore_grade": package_json_product['products'][j]['nutriscore_grade'],
+                        "store" : package_json_product['products'][j]['stores'],
+                        "url": package_json_product['products'][j]['url']
+                    }
+
+                    mycursor.execute(
+                        """INSERT INTO MytableProducts (NameProduct, nutriscore_grade, store, url)
+                        VALUES(%(NameProduct)s, %(nutriscore_grade)s, %(store)s, %(url)s)""",
+                        data_products)
+                    Myconnection.commit()
+                except: # If key don't exist in the file json
+                    continue
     #  Function to fin a sustit to the product
     def find_substitut(self,category,product):
-        #  https://fr.openfoodfacts.org/cgi/search.pl?action=process&tagtype_0=categories&tag_contains_0=contains&tag_0=biscuit
         pass
 
 
@@ -89,15 +106,17 @@ name MyTableSubstituts"""
 
 class Substitut:
     def __init__(self):
+
         # create a table MytableSubstituts in base de données My_Table
-        mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS MyTableSubstituts "
-            "(id_product INT AUTO_INCREMENT PRIMARY KEY,"
-            " id_category INT, name_product VARCHAR(100),"
-            " name_substitut VARCHAR(100), descriptif VARCHAR(100),"
-            " store VARCHAR(100), url_substitut VARCHAR(200))")
+        mycursor.execute("""
+        CREATE TABLE IF NOT EXISTS MyTableSubstituts (
+        id_substitut INT,
+        CONSTRAINT fk_id_substitut  FOREIGN KEY (id_substitut) REFERENCES MyTableProducts(id)
+        );
+        """)
+        mycursor.execute("""ALTER TABLE MyTableSubstituts ENGINE=InnoDB""")
     #  Function to fill data in this table
-    def fill(selfs):
+    def fill(self):
         pass
 
 

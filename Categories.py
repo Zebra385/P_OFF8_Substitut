@@ -4,7 +4,7 @@ import mysql.connector
 Myconnection = mysql.connector.connect(
             host="localhost",  # l'hote sera local
             user=" root ",
-            database="My_table"  # name of base de données
+            database="mysql"  # name of base de données
             )
 mycursor = Myconnection.cursor()
 

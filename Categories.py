@@ -14,10 +14,10 @@ mycursor = Myconnection.cursor()
 class Category:
     def __init__(self):
         """ We create class Catégory to translate the data from a file jason
-            in a table name MyTableCategories in my database My_Table
+            in a table name MyTableCategories in my database mysql
         """
         mycursor.execute("""
-        CREATE TABLE IF NOT EXISTS My_Table.MyTableCategories (
+        CREATE TABLE IF NOT EXISTS mysql.MyTableCategories (
         id_category INT AUTO_INCREMENT NOT NULL,
         name_category VARCHAR(100) NOT NULL,
         PRIMARY KEY (id_category)
@@ -27,7 +27,7 @@ class Category:
     def motor(self):
         """Definition the engine of my table"""
         mycursor.execute(
-            """ALTER TABLE My_Table.MyTableCategories ENGINE = InnoDB""")
+            """ALTER TABLE mysql.MyTableCategories ENGINE = InnoDB""")
 
     def fill(self):
         """Function to fill data in this table"""
@@ -40,6 +40,6 @@ class Category:
                 "name_category": packages_json_categories['tags'][i]['name']
             }
             mycursor.execute(
-                """INSERT INTO My_Table.MytableCategories (name_category)
+                """INSERT INTO mysql.MytableCategories (name_category)
                  VALUES(%(name_category)s)""", data_categories)
             Myconnection.commit()

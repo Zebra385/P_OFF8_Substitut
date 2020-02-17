@@ -4,7 +4,7 @@ import mysql.connector
 Myconnection = mysql.connector.connect(
             host="localhost",  # l'hote sera local
             user=" root ",
-            database="My_table"  # name of base de données
+            database="mysql"  # name of base de données
         )
 mycursor = Myconnection.cursor()
 """              Use to  connect to server              """
@@ -12,10 +12,10 @@ mycursor = Myconnection.cursor()
 class Product:
     def __init__(self):
         """ We create class Product to translate the data from a file jason
-                  in a table name MyTableProduct in my database My_Table
+                  in a table name MyTableProduct in my database mysql
               """
         mycursor.execute("""
-        CREATE TABLE IF NOT EXISTS My_Table.MyTableProducts(
+        CREATE TABLE IF NOT EXISTS mysql.MyTableProducts(
         id_product INT AUTO_INCREMENT NOT NULL,
         id_category INT NOT NULL,
         Name_Product VARCHAR(100) NOT NULL,
@@ -29,22 +29,22 @@ class Product:
     def motor(selfs):
         """Definition the engine of my table"""
         mycursor.execute(
-            """ALTER TABLE My_Table.MyTableProducts ENGINE = InnoDB""")
+            """ALTER TABLE mysql.MyTableProducts ENGINE = InnoDB""")
 
     def strange_key(selfs):
         """Definition the strange key of my table"""
         mycursor.execute("""
-                ALTER TABLE My_Table.MyTableProducts ADD CONSTRAINT
+                ALTER TABLE mysql.MyTableProducts ADD CONSTRAINT
                 table_categories_table_products_fk
                 FOREIGN KEY (id_category)
-                REFERENCES My_Table.MyTableCategories (id_category)
+                REFERENCES mysql.MyTableCategories (id_category)
                 ON DELETE NO ACTION
                 ON UPDATE NO ACTION;
                 """)
 
     def fill(self):
         """Function to fill data in this table"""
-        mycursor.execute("SELECT * FROM My_Table.MytableCategories")
+        mycursor.execute("SELECT * FROM mysql.MytableCategories")
         myresult = mycursor.fetchall()
         for x in myresult:
             package_name = x[1]
@@ -64,7 +64,7 @@ class Product:
                         "url_Product": package_json_product['products'][j]['url']
                     }
                     mycursor.execute("""
-                        INSERT INTO My_Table.MyTableProducts (id_category,
+                        INSERT INTO mysql.MyTableProducts (id_category,
                         Name_Product, nutriscore, store, url_Product)
                         VALUES(%(id_category)s, %(Name_Product)s,
                         %(nutriscore)s, %(store)s, %(url_Product)s)""",
@@ -80,7 +80,7 @@ class Product:
             it returns the name of substitut"""
         self.leproduct = leproduct
         sql = """SELECT id_product,id_category,Name_Product, nutriscore
-                    FROM My_Table.MyTableProducts
+                    FROM mysql.MyTableProducts
                     WHERE id_category =%s
                     ORDER BY nutriscore
                     LIMIT 1"""

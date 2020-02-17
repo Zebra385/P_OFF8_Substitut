@@ -7,7 +7,7 @@
  py -m pip install -r requirements.txt
 ### On utilisera la version python 3.7.5 en 32 bits
 ## 3.Comment exécuter le programme?
-### Il faut commencer par ouvrir l'accés au serveur localhost
+### Il faut commencer par ouvrir l'accés au serveur de base de données
 ### Puis, il suffit de lancer en python Main.py
 ## Celui-ci propose un menu  via le terminale: 
 #### Bonjour, Bienvenue sur OFF_Substitut:
@@ -42,6 +42,6 @@
 #### de déterminer son substituant
 #### Possibilités d'enregistrés ou pas le résultat
 #### Afin de simplifier la démarche le choix du substituant s'effectue en prenant
-####le meilleur nutriscore des élèments de la même catégorie
+#### le meilleur nutriscore des élèments de la même catégorie
 ### 4-4 Visualisation des résultats enregistrés
 #### Jointure entre les tables products et substituants pour afficher les résultats

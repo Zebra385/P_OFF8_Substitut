@@ -1,20 +1,15 @@
 import requests
 import mysql.connector
 
-Myconnection = mysql.connector.connect(
-            host="localhost",  # l'hote sera local
-            user=" root ",
-            database="mysql"  # name of base de données
-        )
-mycursor = Myconnection.cursor()
-"""              Use to  connect to server              """
+
 
 class Product:
-    def __init__(self):
+    def __init__(self, mycursor):
+        self.mycursor = mycursor
         """ We create class Product to translate the data from a file jason
                   in a table name MyTableProduct in my database mysql
               """
-        mycursor.execute("""
+        self.mycursor.execute("""
         CREATE TABLE IF NOT EXISTS mysql.MyTableProducts(
         id_product INT AUTO_INCREMENT NOT NULL,
         id_category INT NOT NULL,
@@ -26,14 +21,14 @@ class Product:
         );
         """)
 
-    def motor(selfs):
+    def motor(self,mycursor):
         """Definition the engine of my table"""
-        mycursor.execute(
+        self.mycursor.execute(
             """ALTER TABLE mysql.MyTableProducts ENGINE = InnoDB""")
 
-    def strange_key(selfs):
+    def strange_key(self,mycursor):
         """Definition the strange key of my table"""
-        mycursor.execute("""
+        self.mycursor.execute("""
                 ALTER TABLE mysql.MyTableProducts ADD CONSTRAINT
                 table_categories_table_products_fk
                 FOREIGN KEY (id_category)
@@ -42,10 +37,10 @@ class Product:
                 ON UPDATE NO ACTION;
                 """)
 
-    def fill(self):
+    def fill(self,mycursor):
         """Function to fill data in this table"""
-        mycursor.execute("SELECT * FROM mysql.MytableCategories")
-        myresult = mycursor.fetchall()
+        self.mycursor.execute("SELECT * FROM mysql.MytableCategories")
+        myresult = self.mycursor.fetchall()
         for x in myresult:
             package_name = x[1]
             package_url = \
@@ -69,7 +64,7 @@ class Product:
                         VALUES(%(id_category)s, %(Name_Product)s,
                         %(nutriscore)s, %(store)s, %(url_Product)s)""",
                         data_products)
-                    Myconnection.commit()
+
                 except:
                     continue
                     # If a mystacke is detect you go at the begining of the loop
@@ -85,8 +80,8 @@ class Product:
                     ORDER BY nutriscore
                     LIMIT 1"""
         nb = (nb_category,)
-        mycursor.execute(sql, nb)
-        myresult = mycursor.fetchall()
+        self.mycursor.execute(sql, nb)
+        myresult = self.mycursor.fetchall()
         for x in myresult:
             print("le produit qui se substitut le mieux à :",
                   leproduct, 'est ', x[2])

@@ -38,9 +38,10 @@ def display_menu(head, options):
 if __name__ == '__main__':
     """ Star the principal program """
     choice = 0
-    category = Category()  # Def class to create table category
-    product = Product()
-    substitut = Substitut()
+    category = Category(mycursor)  # Def class to create table category
+    product = Product(mycursor)
+    substitut = Substitut(mycursor)
+    Myconnection.commit()
     while choice in range(0,4):
         choice = display_menu("Bonjour, Bienvenue sur OFF_Substitut:", [
             "Première utilisation, enregistrement du catalogue des catégories et"
@@ -53,15 +54,16 @@ if __name__ == '__main__':
             """Première utilisation, enregistrement du catalogue des catégories et"
                produits"""
 
-            category.motor()  # Def engine of table
-            category.fill()  #  Fill the table
-
-            product.motor()
-            product.strange_key()  # Def strange key of table
-            product.fill()
-
-            substitut.motor()
-            substitut.strange_key()
+            category.motor(mycursor)  # Def engine of table
+            category.fill(mycursor)  #  Fill the table
+            Myconnection.commit()
+            product.motor(mycursor)
+            product.strange_key(mycursor)  # Def strange key of table
+            product.fill(mycursor)
+            Myconnection.commit()
+            substitut.motor(mycursor)
+            substitut.strange_key(mycursor)
+            Myconnection.commit()
             print("Les tables sont enregistrées dans la base de données mysql")
 
         if choice == 1:
@@ -105,7 +107,7 @@ if __name__ == '__main__':
                 "Enregistrer",
                 "Quitter menu"])
             if choice_menu == 0:
-                substitut.fill(choice_name_product, x[0])
+                substitut.fill(mycursor, choice_name_product, x[0])
                 # Save the résult in the table My.TableSubstitut
             elif choice_menu == 1:
                 sys.exit()  # permet de quiter le programme
@@ -129,5 +131,7 @@ if __name__ == '__main__':
             for x in myresult:
                 print("Le substitut de ", x[0], " est  ", x[1], " acheté chez : ",
                       x[2], ", visible sur le lien", x[3])
+            Myconnection.commit()
         if choice == 3:
             sys.exit()  # permet de quiter le programme
+    Myconnection.commit()

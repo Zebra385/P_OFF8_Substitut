@@ -8,10 +8,10 @@ from Products import Product
 from Substituts import Substitut
 
 Myconnection = mysql.connector.connect(
-            host="localhost",  # l'hote sera local
-            user=" root ",
-            database="mysql"  # name of base de données
-            )
+    host="localhost",  # l'hote sera local
+    user=" root ",
+    database="mysql"  # name of base de données
+)
 mycursor = Myconnection.cursor()
 
 """ Use to  connect to server"""
@@ -42,20 +42,20 @@ if __name__ == '__main__':
     product = Product(mycursor)
     substitut = Substitut(mycursor)
     Myconnection.commit()
-    while choice in range(0,4):
+    while choice in range(0, 4):
         choice = display_menu("Bonjour, Bienvenue sur OFF_Substitut:", [
-            "Première utilisation, enregistrement du catalogue des catégories et"
-            " produits",
+            "Première utilisation, enregistrement du catalogue des catégories"
+            " et produits",
             "Quel aliment souhaitez-vous remplacer ?",
             "Retrouver mes aliments substitués",
             "Quitter menu"
-            ])
+        ])
         if choice == 0:
             """Première utilisation, enregistrement du catalogue des catégories et"
                produits"""
 
             category.motor(mycursor)  # Def engine of table
-            category.fill(mycursor)  #  Fill the table
+            category.fill(mycursor)  # Fill the table
             Myconnection.commit()
             product.motor(mycursor)
             product.strange_key(mycursor)  # Def strange key of table
@@ -64,6 +64,7 @@ if __name__ == '__main__':
             substitut.motor(mycursor)
             substitut.strange_key(mycursor)
             Myconnection.commit()
+
             print("Les tables sont enregistrées dans la base de données mysql")
 
         if choice == 1:
@@ -79,13 +80,13 @@ if __name__ == '__main__':
             choice_category = input(
                 " Faite votre choix en indiquant le numéro de la catégorie")
             print(choice_category)
-            choice_name_myresult = myresult[int(choice_category)-1]
+            choice_name_myresult = myresult[int(choice_category) - 1]
             choice_name_category = choice_name_myresult[1]
             # test print("la catégorie choisie est :",choice_name_category)
             print('Voici les produits possibles de cette catégorie:',
                   choice_name_category)
             sql = """SELECT id_product, Name_Product FROM mysql.MyTableProducts 
-                  WHERE id_category = %s"""
+                    WHERE id_category = %s"""
             nb_category = (choice_category,)
             mycursor.execute(sql, nb_category)  # Display the table
             myresult = mycursor.fetchall()
@@ -97,17 +98,21 @@ if __name__ == '__main__':
                 print(x)
             choice_product = input(
                 " Faite votre choix en indiquant le numéro du produit")
-            choice_name_myresult = myresult[int(choice_product) - int(x_premier)]
+            choice_name_myresult = myresult[int(choice_product) -
+                                            int(x_premier)]
             choice_name_product = choice_name_myresult[1]
             print("le produit choisi est :", choice_name_product)
-            product.find_substitut(choice_category, choice_name_product)
+            id_product_substituer = product.find_substitut(mycursor,
+                                                           choice_category,
+                                                           choice_name_product)
+            Myconnection.commit()
             # Function to find a substitut of the product
-            #  Test print(choice_name_product, x[0])
             choice_menu = display_menu("Que veux tu faire :", [
                 "Enregistrer",
                 "Quitter menu"])
             if choice_menu == 0:
-                substitut.fill(mycursor, choice_name_product, x[0])
+                substitut.fill(mycursor, choice_name_product,
+                               id_product_substituer)
                 # Save the résult in the table My.TableSubstitut
             elif choice_menu == 1:
                 sys.exit()  # permet de quiter le programme
@@ -129,8 +134,8 @@ if __name__ == '__main__':
             mycursor.execute(sql)
             myresult = mycursor.fetchall()
             for x in myresult:
-                print("Le substitut de ", x[0], " est  ", x[1], " acheté chez : ",
-                      x[2], ", visible sur le lien", x[3])
+                print("Le substitut de ", x[0], " est  ", x[1],
+                      " acheté chez : ", x[2], ", visible sur le lien", x[3])
             Myconnection.commit()
         if choice == 3:
             sys.exit()  # permet de quiter le programme

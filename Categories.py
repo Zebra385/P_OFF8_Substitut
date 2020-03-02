@@ -1,6 +1,4 @@
 import requests
-import mysql.connector
-
 
 
 class Category:
@@ -36,4 +34,3 @@ class Category:
             self.mycursor.execute(
                 """INSERT INTO mysql.MytableCategories (name_category)
                  VALUES(%(name_category)s)""", data_categories)
-

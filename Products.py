@@ -1,6 +1,4 @@
 import requests
-import mysql.connector
-
 
 
 class Product:
@@ -21,12 +19,12 @@ class Product:
         );
         """)
 
-    def motor(self,mycursor):
+    def motor(self, mycursor):
         """Definition the engine of my table"""
         self.mycursor.execute(
             """ALTER TABLE mysql.MyTableProducts ENGINE = InnoDB""")
 
-    def strange_key(self,mycursor):
+    def strange_key(self, mycursor):
         """Definition the strange key of my table"""
         self.mycursor.execute("""
                 ALTER TABLE mysql.MyTableProducts ADD CONSTRAINT
@@ -37,7 +35,7 @@ class Product:
                 ON UPDATE NO ACTION;
                 """)
 
-    def fill(self,mycursor):
+    def fill(self, mycursor):
         """Function to fill data in this table"""
         self.mycursor.execute("SELECT * FROM mysql.MytableCategories")
         myresult = self.mycursor.fetchall()
@@ -56,23 +54,25 @@ class Product:
                         ['product_name'], "nutriscore": package_json_product
                         ['products'][j]['nutriscore_grade'],
                         "store": package_json_product['products'][j]['stores'],
-                        "url_Product": package_json_product['products'][j]['url']
+                        "url_Product": package_json_product['products']
+                        [j]['url']
                     }
                     mycursor.execute("""
                         INSERT INTO mysql.MyTableProducts (id_category,
                         Name_Product, nutriscore, store, url_Product)
                         VALUES(%(id_category)s, %(Name_Product)s,
                         %(nutriscore)s, %(store)s, %(url_Product)s)""",
-                        data_products)
-
+                                     data_products)
                 except:
                     continue
-                    # If a mystacke is detect you go at the begining of the loop
+                    # If a mystacke is detect
+                    # you go at the begining of the loop
 
-    def find_substitut(self, nb_category, leproduct):
+    def find_substitut(self, mycursor, nb_category, leproduct):
         """Function to find a sustitut to the product
             simply you take the better key nutriscore
             it returns the name of substitut"""
+        self.mycursor = mycursor
         self.leproduct = leproduct
         sql = """SELECT id_product,id_category,Name_Product, nutriscore
                     FROM mysql.MyTableProducts
@@ -81,8 +81,7 @@ class Product:
                     LIMIT 1"""
         nb = (nb_category,)
         self.mycursor.execute(sql, nb)
-        myresult = self.mycursor.fetchall()
-        for x in myresult:
-            print("le produit qui se substitut le mieux à :",
-                  leproduct, 'est ', x[2])
-            return x[0]
+        myresult_substitut = self.mycursor.fetchall()
+        print("le produit qui se substitut le mieux à :", leproduct, 'est ',
+              myresult_substitut[0][0], myresult_substitut[0][2])
+        return myresult_substitut[0][0]

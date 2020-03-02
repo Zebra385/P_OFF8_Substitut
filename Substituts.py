@@ -1,5 +1,3 @@
-import mysql.connector
-
 
 
 class Substitut:
@@ -44,5 +42,4 @@ class Substitut:
             """INSERT INTO mysql.MyTableSubstituts (
                name_a_substituer, id_product)
                VALUES(%(name_a_substituer)s, %(id_product)s)""",
-               data_substituts)
-
+            data_substituts)
